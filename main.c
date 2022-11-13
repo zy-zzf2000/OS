@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 02:17:45
+ * @LastEditTime: 2022-11-14 02:26:55
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -18,6 +18,12 @@
 
 #define MAXLINE 1024
 
+int all = 0;
+int blank_ignore = 0;
+int recursive = 0;
+int suffix = 0;
+char suffix_name[MAXLINE];
+int help = 0;
 
 /**
  * @description: 检查一个文件类型和访问权限
@@ -140,32 +146,36 @@ int main(int argc,char *argv[])
     while((options = getopt_long(argc, argv, optstring, long_options, &long_option_idx)) != -1){
         switch(options){
             case 'A':
-                printf("A or all\n");
+                all = 1;
                 break;
             case 'b':
-                printf("b\n");
+                blank_ignore = 1;
                 break;
             case 'r':
-                printf("r\n");
+                recursive = 1;
                 break;
             case 's':
-                printf("s or suffix\n");
+                suffix = 1;
+                strcpy(suffix_name,optarg);
                 break;
             case 'h':
-                printf("h or help\n");
+                help = 1;
                 break;
             default:
-                printf("err!\n");
+                printf("err command!\n");
+                return 0;
                 break;
         }
     }
 
-    //输出剩余文件名
-    // for(int i = optind; i < argc; i++){
-    //     printf("argv[%d] is %s\n", i, argv[i]);
-    //     int cal = calSingle(argv[i],1);
-    //     printf("文件行数为：%d\n",cal);
-    // }
+    //TODO:处理help指令
+    
+    //TODO:处理文件参数
+    for(int i = optind; i < argc; i++){
+        printf("argv[%d] is %s\n", i, argv[i]);
+        int cal = calSingle(argv[i],1);
+        printf("文件行数为：%d\n",cal);
+    }
 
     int lines = calDir("test",0,1);
     printf("文件夹行数为：%d\n",lines);
