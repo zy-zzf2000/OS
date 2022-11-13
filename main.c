@@ -2,8 +2,8 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-13 22:30:05
- * @FilePath: /c/lab1/main.c
+ * @LastEditTime: 2022-11-13 22:38:11
+ * @FilePath: /lab1/main.c
  * @Description: 
  * 
  * Copyright (c) 2022 by zy 953725892@qq.com, All Rights Reserved. 
@@ -77,6 +77,12 @@ int main(int argc,char *argv[])
                 break;
         }
     }
+
+    //输出剩余文件名
+    for(int i = optind; i < argc; i++){
+        printf("argv[%d] is %s\n", i, argv[i]);
+    }
+    
     return 0;
 }
 
