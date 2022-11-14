@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 23:55:05
+ * @LastEditTime: 2022-11-15 00:48:02
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -240,30 +240,38 @@ int main(int argc,char *argv[])
     int total = 0;
     printf("line    file\n");
     printf("----    ----\n");
+    //TODO:将处理过程分类为单线程和多线程
     for(int i = optind; i < argc; i++){
-
         char* path = argv[i];
         int type = checkType(path);
         if (type>0){
             if(type==1){
-                char* filepath = (char*) malloc(strlen(path)+strlen("./"));
-                sprintf(filepath,"./%s",path);
-                int singleline = use_suffix==1?calSingle(filepath,blank_ignore,suffix_name):calSingle(filepath,blank_ignore,NULL);
-                print_result(path,singleline);
-                if(singleline>0){
-                    total += singleline;
+                if(enable_thread==0){
+                    char* filepath = (char*) malloc(strlen(path)+strlen("./"));
+                    sprintf(filepath,"./%s",path);
+                    int singleline = use_suffix==1?calSingle(filepath,blank_ignore,suffix_name):calSingle(filepath,blank_ignore,NULL);
+                    print_result(path,singleline);
+                    if(singleline>0){
+                        total += singleline;
+                    }
+                }else{
+                    //TODO:在这里实现多线程处理单个文件
                 }
             }else if(type==2){
-                char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
-                if((strcmp(path,".")==0 || strcmp(path,"..")==0)){
-                    dirpath = path;
+                if(enable_thread==0){
+                    char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
+                    if((strcmp(path,".")==0 || strcmp(path,"..")==0)){
+                        dirpath = path;
+                    }else{
+                        sprintf(dirpath,"./%s",path);
+                    }
+                    int dirline = use_suffix==1?calDir(dirpath,blank_ignore,recursive,suffix_name):calDir(dirpath,blank_ignore,recursive,NULL);
+                    //print_result(path,dirline);
+                    if(dirline>0){
+                        total += dirline;
+                    }
                 }else{
-                    sprintf(dirpath,"./%s",path);
-                }
-                int dirline = use_suffix==1?calDir(dirpath,blank_ignore,recursive,suffix_name):calDir(dirpath,blank_ignore,recursive,NULL);
-                //print_result(path,dirline);
-                if(dirline>0){
-                    total += dirline;
+                    //TODO:在这里实现多线程处理文件夹
                 }
             }
         }else{
