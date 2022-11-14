@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 12:46:13
+ * @LastEditTime: 2022-11-14 13:05:52
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -51,12 +51,38 @@ int checkType(char* path){
 }
 
 /**
+ * @description: 检查文件是否满足suffix_name中指定后缀
+ * @param {char*} path：待检查文件
+ * @return {*}： 1：满足 0：不满足
+ */
+int checkSuffix(char* path,char* suffix_name){
+    int len = strlen(path);
+    int len_suffix = strlen(suffix_name);
+    if(len < len_suffix){
+        return 0;
+    }
+    for(int i = 0; i < len_suffix; i++){
+        if(path[len - len_suffix + i] != suffix_name[i]){
+            return 0;
+        }
+    }
+    return 1;
+}
+
+/**
  * @description: 统计一个普通文件的行数
  * @param {char*} path:文件路径
  * @param {int} mode：是否忽略空行；1：忽略空行；0：不忽略空行
+ * @param {char*} suffix:文件后缀
  * @return {*}：-1：文件打开错误；other：文件行数
  */
-int calSingle(char* path,int mode){
+int calSingle(char* path,int mode,char* suffix){
+    //TODO:处理文件后缀
+    if (suffix!=NULL){
+        if(!checkSuffix(path,suffix)){
+            return 0;
+        }
+    }
     char* filepath = (char*) malloc(strlen(path)+strlen("./"));
     sprintf(filepath,"./%s",path);
     FILE* fp = fopen(filepath,"r");
@@ -95,11 +121,10 @@ int calSingle(char* path,int mode){
  * @param {int} recursive：是否递归处理子文件；1：递归；0：不递归
  * @return {*}: -1：目录打开错误；other：文件行数
  */
-int calDir(char* path,int mode,int recursive){
+int calDir(char* path,int mode,int recursive,char* suffix){
     DIR *dir;
     struct dirent *dp;
     int lines = 0;
-
     char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
     sprintf(dirpath,"./%s",path);
     if((dir=opendir(dirpath))==NULL){
@@ -116,12 +141,12 @@ int calDir(char* path,int mode,int recursive){
         sprintf(filepath,"%s/%s",path,dp->d_name);
         int type = checkType(filepath);
         if (type == 1){
-            int singleline = calSingle(filepath,mode);
+            int singleline = calSingle(filepath,mode,suffix);
             if(singleline>0){
                 lines += singleline;
             }
         }else if(type==2 && recursive==1){
-            int dirline = calDir(filepath,mode,recursive);
+            int dirline = calDir(filepath,mode,recursive,suffix);
             if(dirline>0){
                 lines += dirline;
             }
@@ -167,7 +192,7 @@ int main(int argc,char *argv[])
         }
     }
 
-    //TODO:处理help指令
+    //TODO:处理help指令(Done)
     if(help == 1){
         printf("Usage: lc [OPTION] ... [FILE | DIR] ...\n");
         printf("Print newline counts for each FILE or DIR, and a total line if more than one FILE is specified.\n");
@@ -186,11 +211,13 @@ int main(int argc,char *argv[])
     //TODO:处理文件参数
     for(int i = optind; i < argc; i++){
         printf("argv[%d] is %s\n", i, argv[i]);
-        int cal = calSingle(argv[i],1);
+        int cal = calSingle(argv[i],1,"123");
         printf("文件行数为：%d\n",cal);
     }
 
-    int lines = calDir("test",0,1);
+    printf("\n\n\n");
+
+    int lines = calDir("test",0,1,NULL);
     printf("文件夹行数为：%d\n",lines);
     return 0;
 }
