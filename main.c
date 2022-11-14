@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 14:46:33
+ * @LastEditTime: 2022-11-14 14:48:40
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -235,8 +235,6 @@ int main(int argc,char *argv[])
         return 0;
     }
 
-    //TODO:处理文件参数
-    //FIXME:后缀不满足的文件会输出一个0行的结果
     int total = 0;
     printf("line    file\n");
     printf("----    ----\n");
