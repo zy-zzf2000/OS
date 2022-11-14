@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 23:29:11
+ * @LastEditTime: 2022-11-14 23:40:13
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include "myerror.h"
-#include "queue.h"
+#include "parallel.h"
 
 #define MAXLINE 1024
 
@@ -193,6 +193,7 @@ int main(int argc,char *argv[])
         {"all",     no_argument,       0,  'A' },
         {"suffix",  required_argument, 0,  's' },
         {"help",    no_argument,       0,  'h' },
+        {"thread",  required_argument, 0,  't' },
         {0,         0,                 0,   0  } 
     };
     
@@ -214,6 +215,10 @@ int main(int argc,char *argv[])
             case 'h':
                 help = 1;
                 break;
+            case 't':
+                enable_thread = 1;
+                thread_num = atoi(optarg);
+                break;
             default:
                 printf("err command!\n");
                 return 0;
@@ -234,6 +239,7 @@ int main(int argc,char *argv[])
         printf("    -r                            count directory Recursively\n");
         printf("    -s, --suffix=FILE-SUFFIX      only count the file with specified Suffix\n");
         printf("    -h, --help                    display this Help and exit\n");
+        printf("    -t, --thread=NUMBER           use multithread to count \n");
         return 0;
     }
 
