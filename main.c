@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 02:26:55
+ * @LastEditTime: 2022-11-14 12:46:13
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -48,7 +48,6 @@ int checkType(char* path){
     }else{
         return -2;
     }
-    
 }
 
 /**
@@ -169,7 +168,21 @@ int main(int argc,char *argv[])
     }
 
     //TODO:处理help指令
-    
+    if(help == 1){
+        printf("Usage: lc [OPTION] ... [FILE | DIR] ...\n");
+        printf("Print newline counts for each FILE or DIR, and a total line if more than one FILE is specified.\n");
+        printf("\n");
+        printf("With no FILE, or when FILE is -, read standard input.\n");
+        printf("\n");
+        printf("Mandatory arguments to long options are mandatory for short options too.\n");
+        printf("    -A, --all                     print the total line number only\n");
+        printf("    -b                            ignore the Blank line when counting\n");
+        printf("    -r                            count directory Recursively\n");
+        printf("    -s, --suffix=FILE-SUFFIX      only count the file with specified Suffix\n");
+        printf("    -h, --help                    display this Help and exit\n");
+        return 0;
+    }
+
     //TODO:处理文件参数
     for(int i = optind; i < argc; i++){
         printf("argv[%d] is %s\n", i, argv[i]);
