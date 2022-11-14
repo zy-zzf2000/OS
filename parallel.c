@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 21:16:45
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 01:33:19
+ * @LastEditTime: 2022-11-15 01:52:23
  * @FilePath: /lab1/parallel.c
  * @Description: 并行化函数实现
  * 
@@ -26,12 +26,13 @@ void assign_task(Task *task,int queue_id){
 }
 
 //线程执行的函数,从第i个任务队列中取出任务执行
-void consume_task(int i){
+void consume_task(void* i){
+    int idx = (int)i;
     while(1){
-        if(QueueEmpty(&queues[i])){
+        if(QueueEmpty(&queues[idx])){
             sleep(1);
         }else{
-            Task task = Pop(&queues[i]);
+            Task task = Pop(&queues[idx]);
             if (task.id == -1){
                 break;
             }else{
@@ -51,7 +52,7 @@ void calDir_parallel(char* path,int mode,int recursive,char* suffix){
     struct dirent *dp;
     if((dir=opendir(path))==NULL){
         //printf("目录打开失败\n");
-        return ERROR_FILE_OPEN;
+        return;
     }
 
     while((dp = readdir(dir)) != NULL){

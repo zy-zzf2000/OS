@@ -11,6 +11,10 @@ add_executable(lc
     queue.c
     myerror.c
     global.c
-    )
+)
 
 target_include_directories(lc PUBLIC "${PROJECT_BINARY_DIR}")
+
+TARGET_LINK_LIBRARIES( lc
+    pthread
+)

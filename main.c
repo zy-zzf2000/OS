@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 01:27:21
+ * @LastEditTime: 2022-11-15 01:55:11
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -323,12 +323,21 @@ int main(int argc,char *argv[])
         }
     }
 
-    //到这里，所有的任务都已经加入到任务队列中去了,向每个任务队列中加入一个结束标志
-    callfinish();
-    
-
-
     if(enable_thread==0){
+        //到这里，所有的任务都已经加入到任务队列中去了,向每个任务队列中加入一个结束标志
+        callfinish();
+        //创建线程
+        pthread_t threads[thread_num];
+        for(int i = 0; i < thread_num; i++){
+            int ret = pthread_create(&threads[i],NULL,consume_task,(void*)i);
+            if(ret!=0){
+                printf("创建线程失败\n");
+            }
+        }
+        //等待线程结束
+        for(int i = 0; i < thread_num; i++){
+            pthread_join(threads[i],NULL);
+        }
         printf("%4d     %s\n",total,"total");
     }
     else{
