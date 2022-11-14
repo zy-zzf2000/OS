@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 23:40:13
+ * @LastEditTime: 2022-11-14 23:55:05
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -19,16 +19,11 @@
 
 #include "myerror.h"
 #include "parallel.h"
+#include "global.h"
 
-#define MAXLINE 1024
 
 
-int all = 0;
-int blank_ignore = 0;
-int recursive = 0;
-int use_suffix = 0;
-char suffix_name[MAXLINE];
-int help = 0;
+
 
 
 
@@ -103,7 +98,6 @@ int checkSuffix(char* path,char* suffix_name){
  */
 //FIXME:将path路径的修改移出calSingle
 int calSingle(char* path,int mode,char* suffix){
-    //TODO:处理文件后缀
     if (suffix!=NULL){
         if(!checkSuffix(path,suffix)){
             return ERROR_SUFFIX;

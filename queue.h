@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 20:05:16
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 20:31:43
+ * @LastEditTime: 2022-11-15 00:46:05
  * @FilePath: /lab1/queue.h
  * @Description: 任务队列数据结构实现
  * 
@@ -25,8 +25,8 @@ typedef struct Task
 typedef struct Node
 {
     Task task;      //任务数据
-    Node* next;  //下一个节点
-    Node* pre;   //前一个节点
+    struct Node* next;  //下一个节点
+    struct Node* pre;   //前一个节点
 }Node;
 
 //队列数据结构
