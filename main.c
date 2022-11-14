@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 00:48:02
+ * @LastEditTime: 2022-11-15 01:27:21
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -17,15 +17,29 @@
 #include <dirent.h>
 #include <stdlib.h>
 
-#include "myerror.h"
 #include "parallel.h"
-#include "global.h"
 
 
+extern int ERROR_FILE_TYPE;
+extern int ERROR_FILE_PERMISSION;
+extern int ERROR_FSTATAT;
+extern int ERROR_FILE_OPEN;
+extern int ERROR_SUFFIX;
+
+extern int all;
+extern int blank_ignore;
+extern int recursive;
+extern int use_suffix;
+extern char suffix_name[MAXLINE];
+extern int help;
 
 
-
-
+//多线程相关
+extern int enable_thread;       //是否开启多线程
+extern int thread_num;             //线程数
+extern Queue queues[MAXTHREAD];   //每个线程对应的任务队列
+extern int next_queue_idx;
+extern int parallel_total;
 
 /**
  * @description: 打印文件/文件夹统计结果
@@ -212,6 +226,11 @@ int main(int argc,char *argv[])
             case 't':
                 enable_thread = 1;
                 thread_num = atoi(optarg);
+                if(thread_num<1){
+                    printf("线程数必须大于0\n");
+                    return 0;
+                }
+                parallel_init();
                 break;
             default:
                 printf("err command!\n");
@@ -256,6 +275,20 @@ int main(int argc,char *argv[])
                     }
                 }else{
                     //TODO:在这里实现多线程处理单个文件
+                    //需要将该文件加入到任务队列中去
+                    char* filepath = (char*) malloc(strlen(path)+strlen("./"));
+                    sprintf(filepath,"./%s",path);
+                    Task task;
+                    task.path = filepath;
+                    task.id = 1;
+                    task.mode = blank_ignore;
+                    task.suffix = use_suffix==1?suffix_name:NULL;
+
+                    pthread_mutex_lock(&queueidxlock);
+                    int queue_id = next_queue_idx;
+                    Push(&queues[queue_id],task);
+                    next_queue_idx = (next_queue_idx+1)%thread_num;
+                    pthread_mutex_unlock(&queueidxlock);
                 }
             }else if(type==2){
                 if(enable_thread==0){
@@ -272,13 +305,35 @@ int main(int argc,char *argv[])
                     }
                 }else{
                     //TODO:在这里实现多线程处理文件夹
+                    char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
+                    if((strcmp(path,".")==0 || strcmp(path,"..")==0)){
+                        dirpath = path;
+                    }else{
+                        sprintf(dirpath,"./%s",path);
+                    }
+                    if(use_suffix==1){
+                        calDir_parallel(dirpath,blank_ignore,recursive,suffix_name);
+                    }else{
+                        calDir_parallel(dirpath,blank_ignore,recursive,NULL);
+                    }
                 }
             }
         }else{
             print_result(argv[i],type);
         }
     }
-    printf("%4d     %s\n",total,"total");
+
+    //到这里，所有的任务都已经加入到任务队列中去了,向每个任务队列中加入一个结束标志
+    callfinish();
+    
+
+
+    if(enable_thread==0){
+        printf("%4d     %s\n",total,"total");
+    }
+    else{
+        printf("%4d     %s\n",parallel_total,"total");
+    }
     return 0;
 }
 
