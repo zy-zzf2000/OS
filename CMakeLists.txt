@@ -7,4 +7,4 @@ set(CMAKE_C_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g")
 
 add_executable(lc main.c)
 
-target_include_directories(lc PUBLIC "${PROJECT_BINARY_DIR}" )
+target_include_directories(lc PUBLIC "${PROJECT_BINARY_DIR}")

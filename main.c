@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 19:16:19
+ * @LastEditTime: 2022-11-14 23:29:11
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -18,8 +18,10 @@
 #include <stdlib.h>
 
 #include "myerror.h"
+#include "queue.h"
 
 #define MAXLINE 1024
+
 
 int all = 0;
 int blank_ignore = 0;
@@ -27,6 +29,8 @@ int recursive = 0;
 int use_suffix = 0;
 char suffix_name[MAXLINE];
 int help = 0;
+
+
 
 /**
  * @description: 打印文件/文件夹统计结果
