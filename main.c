@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 01:55:11
+ * @LastEditTime: 2022-11-15 02:09:38
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -196,7 +196,7 @@ int main(int argc,char *argv[])
 {
     int options;
     int long_option_idx;
-    char* optstring = "Abrs:h";
+    char* optstring = "Abrs:ht:";
     static struct option long_options[] = {
         {"all",     no_argument,       0,  'A' },
         {"suffix",  required_argument, 0,  's' },
@@ -323,7 +323,7 @@ int main(int argc,char *argv[])
         }
     }
 
-    if(enable_thread==0){
+    if(enable_thread==1){
         //到这里，所有的任务都已经加入到任务队列中去了,向每个任务队列中加入一个结束标志
         callfinish();
         //创建线程
@@ -338,10 +338,10 @@ int main(int argc,char *argv[])
         for(int i = 0; i < thread_num; i++){
             pthread_join(threads[i],NULL);
         }
-        printf("%4d     %s\n",total,"total");
+        printf("%4d     %s\n",parallel_total,"total");
     }
     else{
-        printf("%4d     %s\n",parallel_total,"total");
+        printf("%4d     %s\n",total,"total");
     }
     return 0;
 }

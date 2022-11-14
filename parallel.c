@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 21:16:45
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 01:52:23
+ * @LastEditTime: 2022-11-15 02:11:26
  * @FilePath: /lab1/parallel.c
  * @Description: 并行化函数实现
  * 
@@ -38,8 +38,13 @@ void consume_task(void* i){
             }else{
                 int lines = calSingle(task.path,task.mode,task.suffix);
                 pthread_mutex_lock(&paralltotalllock);
-                parallel_total += lines;
+                if(lines>0){
+                    parallel_total += lines;
+                }
                 pthread_mutex_unlock(&paralltotalllock);
+                if(lines>0){
+                    printf("%4d     %s\n",lines,task.path);
+                }
             }
         }
         
