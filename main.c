@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 14:48:40
+ * @LastEditTime: 2022-11-14 19:04:35
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -15,6 +15,7 @@
 #include <getopt.h>
 #include "string.h"
 #include <dirent.h>
+#include <stdlib.h>
 
 #include "myerror.h"
 
@@ -96,6 +97,7 @@ int checkSuffix(char* path,char* suffix_name){
  * @param {char*} suffix:文件后缀
  * @return {*}：<0:文件错误类型;other:文件行数
  */
+//FIXME:将path路径的修改移出calSingle
 int calSingle(char* path,int mode,char* suffix){
     //TODO:处理文件后缀
     if (suffix!=NULL){
@@ -103,9 +105,7 @@ int calSingle(char* path,int mode,char* suffix){
             return ERROR_SUFFIX;
         }
     }
-    char* filepath = (char*) malloc(strlen(path)+strlen("./"));
-    sprintf(filepath,"./%s",path);
-    FILE* fp = fopen(filepath,"r");
+    FILE* fp = fopen(path,"r");
     if(fp == NULL){
         return ERROR_FILE_OPEN;
     }
@@ -140,14 +140,11 @@ int calSingle(char* path,int mode,char* suffix){
  * @param {int} recursive：是否递归处理子文件；1：递归；0：不递归
  * @return {*}: <0:文件错误类型;other:文件行数
  */
-//TODO:处理输出问题
 int calDir(char* path,int mode,int recursive,char* suffix){
     DIR *dir;
     struct dirent *dp;
     int lines = 0;
-    char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
-    sprintf(dirpath,"./%s",path);
-    if((dir=opendir(dirpath))==NULL){
+    if((dir=opendir(path))==NULL){
         //printf("目录打开失败\n");
         return ERROR_FILE_OPEN;
     }
@@ -158,7 +155,7 @@ int calDir(char* path,int mode,int recursive,char* suffix){
             continue;
         }
         //构造子文件路径
-        char* filepath = (char*) malloc(strlen(path)+strlen(dp->d_name)+strlen("/"));
+        char* filepath = (char*) malloc(strlen(path)+strlen(dp->d_name)+strlen("/")+10);
         sprintf(filepath,"%s/%s",path,dp->d_name);
         int type = checkType(filepath);
         if(type>0){
@@ -179,6 +176,7 @@ int calDir(char* path,int mode,int recursive,char* suffix){
             print_result(filepath,type);
         }
     }
+    closedir(dir);
     return lines;
 }
 
@@ -244,13 +242,17 @@ int main(int argc,char *argv[])
         int type = checkType(path);
         if (type>0){
             if(type==1){
-                int singleline = use_suffix==1?calSingle(path,blank_ignore,suffix_name):calSingle(path,blank_ignore,NULL);
+                char* filepath = (char*) malloc(strlen(path)+strlen("./"));
+                sprintf(filepath,"./%s",path);
+                int singleline = use_suffix==1?calSingle(filepath,blank_ignore,suffix_name):calSingle(filepath,blank_ignore,NULL);
                 print_result(path,singleline);
                 if(singleline>0){
                     total += singleline;
                 }
             }else if(type==2){
-                int dirline = use_suffix==1?calDir(path,blank_ignore,recursive,suffix_name):calDir(path,blank_ignore,recursive,NULL);
+                char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
+                sprintf(dirpath,"./%s",path);
+                int dirline = use_suffix==1?calDir(dirpath,blank_ignore,recursive,suffix_name):calDir(dirpath,blank_ignore,recursive,NULL);
                 //print_result(path,dirline);
                 if(dirline>0){
                     total += dirline;
