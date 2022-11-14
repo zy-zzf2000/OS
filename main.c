@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 13:05:52
+ * @LastEditTime: 2022-11-14 14:18:49
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -16,37 +16,53 @@
 #include "string.h"
 #include <dirent.h>
 
+#include "myerror.h"
+
 #define MAXLINE 1024
 
 int all = 0;
 int blank_ignore = 0;
 int recursive = 0;
-int suffix = 0;
+int use_suffix = 0;
 char suffix_name[MAXLINE];
 int help = 0;
 
 /**
+ * @description: 打印文件/文件夹统计结果
+ * @param {char} *path：文件/文件夹路径
+ * @param {int} line：行数（错误信息）
+ * @return {*}
+ */
+void print_result(char *path, int line){
+    if(line<0){
+        printf("%s    %s\n",getError(line),path);
+    }else{
+        printf("%4d     %s\n",line,path);
+    }
+}
+
+//打开从命令行获取的文件路径，以及遍历文件夹时调用此函数
+/**
  * @description: 检查一个文件类型和访问权限
  * @param {char*} path : 文件路径
- * @return {*} ： -1：文件类型错误 -2：文件权限错误  1：文件为普通文件  2：文件为目录文件
+ * @return {*} ：<0:文件错误类型 1:普通文件 2:目录文件
  */
 int checkType(char* path){
     struct stat buf;
-    fstatat(AT_FDCWD, path, &buf, 0);
+    if(fstatat(AT_FDCWD, path, &buf, 0)<0){
+        return ERROR_FSTATAT;
+    }
     //首先检查文件权限
     if(buf.st_mode & S_IRUSR){
         if(S_ISDIR(buf.st_mode)){
-            printf("文件为目录文件\n");
             return 2;
         }else if(S_ISREG(buf.st_mode)){
-            printf("文件为普通文件\n");
             return 1;
         }else{
-            printf("文件类型错误\n");
-            return -1;
+            return ERROR_FILE_TYPE;
         }
     }else{
-        return -2;
+        return ERROR_FILE_PERMISSION;
     }
 }
 
@@ -74,7 +90,7 @@ int checkSuffix(char* path,char* suffix_name){
  * @param {char*} path:文件路径
  * @param {int} mode：是否忽略空行；1：忽略空行；0：不忽略空行
  * @param {char*} suffix:文件后缀
- * @return {*}：-1：文件打开错误；other：文件行数
+ * @return {*}：<0:文件错误类型;other:文件行数
  */
 int calSingle(char* path,int mode,char* suffix){
     //TODO:处理文件后缀
@@ -87,8 +103,7 @@ int calSingle(char* path,int mode,char* suffix){
     sprintf(filepath,"./%s",path);
     FILE* fp = fopen(filepath,"r");
     if(fp == NULL){
-        printf("文件打开失败\n");
-        return -1;
+        return ERROR_FILE_OPEN;
     }
     int line = 0;
     if(mode == 1){
@@ -110,7 +125,7 @@ int calSingle(char* path,int mode,char* suffix){
         }
         line++;
     }
-    printf("文件行数为：%d\n",line);
+    //printf("文件行数为：%d\n",line);
     return line;
 }
 
@@ -119,8 +134,9 @@ int calSingle(char* path,int mode,char* suffix){
  * @param {char*} path：文件路径
  * @param {int} mode：是否忽略空行；1：忽略空行；0：不忽略空行
  * @param {int} recursive：是否递归处理子文件；1：递归；0：不递归
- * @return {*}: -1：目录打开错误；other：文件行数
+ * @return {*}: <0:文件错误类型;other:文件行数
  */
+//TODO:处理输出问题
 int calDir(char* path,int mode,int recursive,char* suffix){
     DIR *dir;
     struct dirent *dp;
@@ -128,9 +144,10 @@ int calDir(char* path,int mode,int recursive,char* suffix){
     char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
     sprintf(dirpath,"./%s",path);
     if((dir=opendir(dirpath))==NULL){
-        printf("目录打开失败\n");
-        return -1;
+        //printf("目录打开失败\n");
+        return ERROR_FILE_OPEN;
     }
+    //这里的处理和从命令行获取的文件是类似的
     while((dp = readdir(dir)) != NULL){
         //跳过.和..目录
         if(strcmp(dp->d_name,".")==0 || strcmp(dp->d_name,"..")==0){
@@ -140,16 +157,22 @@ int calDir(char* path,int mode,int recursive,char* suffix){
         char* filepath = (char*) malloc(strlen(path)+strlen(dp->d_name)+strlen("/"));
         sprintf(filepath,"%s/%s",path,dp->d_name);
         int type = checkType(filepath);
-        if (type == 1){
-            int singleline = calSingle(filepath,mode,suffix);
-            if(singleline>0){
-                lines += singleline;
+        if(type>0){
+            if (type == 1){
+                int singleline = calSingle(filepath,mode,suffix);
+                print_result(filepath,singleline);
+                if(singleline>0){
+                    lines += singleline;
+                }
+            }else if(type==2 && recursive==1){
+                int dirline = calDir(filepath,mode,recursive,suffix);
+                print_result(filepath,dirline);
+                if(dirline>0){
+                    lines += dirline;
+                }
             }
-        }else if(type==2 && recursive==1){
-            int dirline = calDir(filepath,mode,recursive,suffix);
-            if(dirline>0){
-                lines += dirline;
-            }
+        }else{
+            print_result(filepath,type);
         }
     }
     return lines;
@@ -179,7 +202,7 @@ int main(int argc,char *argv[])
                 recursive = 1;
                 break;
             case 's':
-                suffix = 1;
+                use_suffix = 1;
                 strcpy(suffix_name,optarg);
                 break;
             case 'h':
@@ -210,15 +233,22 @@ int main(int argc,char *argv[])
 
     //TODO:处理文件参数
     for(int i = optind; i < argc; i++){
-        printf("argv[%d] is %s\n", i, argv[i]);
-        int cal = calSingle(argv[i],1,"123");
-        printf("文件行数为：%d\n",cal);
+        printf("line    file\n");
+        printf("----    ----\n");
+        char* path = argv[i];
+        int type = checkType(path);
+        if (type>0){
+            if(type==1){
+                int singleline = use_suffix==1?calSingle(path,blank_ignore,suffix_name):calSingle(path,blank_ignore,NULL);
+                print_result(path,singleline);
+            }else if(type==2){
+                int dirline = use_suffix==1?calDir(path,blank_ignore,recursive,suffix_name):calDir(path,blank_ignore,recursive,NULL);
+                print_result(path,dirline);
+            }
+        }else{
+            print_result(argv[i],type);
+        }
     }
-
-    printf("\n\n\n");
-
-    int lines = calDir("test",0,1,NULL);
-    printf("文件夹行数为：%d\n",lines);
     return 0;
 }
 
