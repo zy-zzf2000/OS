@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 19:04:35
+ * @LastEditTime: 2022-11-14 19:16:19
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -251,7 +251,11 @@ int main(int argc,char *argv[])
                 }
             }else if(type==2){
                 char* dirpath = (char*) malloc(strlen(path)+strlen("./"));
-                sprintf(dirpath,"./%s",path);
+                if((strcmp(path,".")==0 || strcmp(path,"..")==0)){
+                    dirpath = path;
+                }else{
+                    sprintf(dirpath,"./%s",path);
+                }
                 int dirline = use_suffix==1?calDir(dirpath,blank_ignore,recursive,suffix_name):calDir(dirpath,blank_ignore,recursive,NULL);
                 //print_result(path,dirline);
                 if(dirline>0){
