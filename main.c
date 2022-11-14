@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-14 14:18:49
+ * @LastEditTime: 2022-11-14 14:46:33
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -34,10 +34,14 @@ int help = 0;
  * @return {*}
  */
 void print_result(char *path, int line){
-    if(line<0){
-        printf("%s    %s\n",getError(line),path);
-    }else{
-        printf("%4d     %s\n",line,path);
+    if (all!=1){
+        if(line==ERROR_SUFFIX){
+            return;
+        }else if(line<0){
+            printf("%s    %s\n",getError(line),path);
+        }else{
+            printf("%4d     %s\n",line,path);
+        }
     }
 }
 
@@ -96,7 +100,7 @@ int calSingle(char* path,int mode,char* suffix){
     //TODO:处理文件后缀
     if (suffix!=NULL){
         if(!checkSuffix(path,suffix)){
-            return 0;
+            return ERROR_SUFFIX;
         }
     }
     char* filepath = (char*) malloc(strlen(path)+strlen("./"));
@@ -166,7 +170,7 @@ int calDir(char* path,int mode,int recursive,char* suffix){
                 }
             }else if(type==2 && recursive==1){
                 int dirline = calDir(filepath,mode,recursive,suffix);
-                print_result(filepath,dirline);
+                //print_result(filepath,dirline);
                 if(dirline>0){
                     lines += dirline;
                 }
@@ -232,23 +236,33 @@ int main(int argc,char *argv[])
     }
 
     //TODO:处理文件参数
+    //FIXME:后缀不满足的文件会输出一个0行的结果
+    int total = 0;
+    printf("line    file\n");
+    printf("----    ----\n");
     for(int i = optind; i < argc; i++){
-        printf("line    file\n");
-        printf("----    ----\n");
+
         char* path = argv[i];
         int type = checkType(path);
         if (type>0){
             if(type==1){
                 int singleline = use_suffix==1?calSingle(path,blank_ignore,suffix_name):calSingle(path,blank_ignore,NULL);
                 print_result(path,singleline);
+                if(singleline>0){
+                    total += singleline;
+                }
             }else if(type==2){
                 int dirline = use_suffix==1?calDir(path,blank_ignore,recursive,suffix_name):calDir(path,blank_ignore,recursive,NULL);
-                print_result(path,dirline);
+                //print_result(path,dirline);
+                if(dirline>0){
+                    total += dirline;
+                }
             }
         }else{
             print_result(argv[i],type);
         }
     }
+    printf("%4d     %s\n",total,"total");
     return 0;
 }
 
