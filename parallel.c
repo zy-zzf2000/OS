@@ -2,13 +2,15 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 21:16:45
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 02:11:26
+ * @LastEditTime: 2022-11-15 02:22:59
  * @FilePath: /lab1/parallel.c
  * @Description: 并行化函数实现
  * 
  * Copyright (c) 2022 by zy 953725892@qq.com, All Rights Reserved. 
  */
 #include "parallel.h"
+
+extern int all;
 
 //初始化并行过程中相关变量
 void parallel_init(){
@@ -42,7 +44,7 @@ void consume_task(void* i){
                     parallel_total += lines;
                 }
                 pthread_mutex_unlock(&paralltotalllock);
-                if(lines>0){
+                if(lines>0 && all!=1){
                     printf("%4d     %s\n",lines,task.path);
                 }
             }
