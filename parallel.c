@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 21:16:45
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 02:22:59
+ * @LastEditTime: 2022-11-15 02:31:19
  * @FilePath: /lab1/parallel.c
  * @Description: 并行化函数实现
  * 

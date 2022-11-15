@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 20:05:16
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 00:46:05
+ * @LastEditTime: 2022-11-15 02:30:37
  * @FilePath: /lab1/queue.h
  * @Description: 任务队列数据结构实现
  * 
@@ -37,13 +37,26 @@ typedef struct Queue
     int size;       //队列大小
 }Queue;
 
-//初始化队列
+/**
+ * @description: 初始化队列
+ * @param {Queue*} queue:待初始化的队列指针
+ * @return {*}
+ */
 void InitQueue(Queue* queue);
 
-//删除队列
+/**
+ * @description: 删除队列
+ * @param {Queue*} queue：待删除的队列指针
+ * @return {*}
+ */
 void QueueDestroy(Queue* queue);
 
-//入队
+/**
+ * @description: 将某个task压入指定队列
+ * @param {Queue*} queue：待压入的队列指针
+ * @param {Task} task：待压入的任务
+ * @return {*}
+ */
 void Push(Queue* queue, Task task);
 
 //出队

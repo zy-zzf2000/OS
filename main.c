@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-13 20:21:09
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 02:09:38
+ * @LastEditTime: 2022-11-15 14:50:37
  * @FilePath: /lab1/main.c
  * @Description: 
  * 
@@ -142,6 +142,7 @@ int calSingle(char* path,int mode,char* suffix){
         line++;
     }
     //printf("文件行数为：%d\n",line);
+    fclose(fp);
     return line;
 }
 

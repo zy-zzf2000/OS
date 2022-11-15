@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 21:08:29
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 01:53:14
+ * @LastEditTime: 2022-11-15 11:56:55
  * @FilePath: /lab1/parallel.h
  * @Description: 存放并行过程用到的函数与数据
  * 
@@ -21,7 +21,7 @@
 #include "myerror.h"
 
 #define MAXLINE 1024
-#define MAXTHREAD 20       //最大线程数
+#define MAXTHREAD 1024       //最大线程数
 
 extern int ERROR_FILE_TYPE;
 extern int ERROR_FILE_PERMISSION;
@@ -47,16 +47,16 @@ extern int parallel_total;
 pthread_mutex_t  queueidxlock;  //用于保护next_queue_idx
 pthread_mutex_t  paralltotalllock;  //用于保护parallel_total
 
-//初始化并行的锁、队列
+//初始化并行所需的的锁、队列
 void parallel_init();
 
 //将一个任务分配到一个任务队列中去
 void assign_task(Task *task,int queue_id);
 
-//线程执行的函数,从第i个任务队列中取出任务执行
+//线程执行的函数,从第i个任务队列中取出任务执行,直到取到结束标志(id为-1的task)为止
 void consume_task(void* i);
 
-//并行化模式下，main线程执行的calDir，将任务分配到任务队列中去，而不调用calSingle
+//并行化模式下，main线程执行的calDir，将文件夹内的每个普通文件作为任务分配到任务队列中去，而不调用calSingle
 void calDir_parallel(char* path,int mode,int recursive,char* suffix);
 
 //在main线程分配完任务后，向所有队列中分别插入一个结束标志
