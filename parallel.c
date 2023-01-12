@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2022-11-14 21:16:45
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2022-11-15 02:31:19
+ * @LastEditTime: 2022-11-15 23:23:17
  * @FilePath: /lab1/parallel.c
  * @Description: 并行化函数实现
  * 
@@ -30,7 +30,7 @@ void assign_task(Task *task,int queue_id){
 //线程执行的函数,从第i个任务队列中取出任务执行
 void consume_task(void* i){
     int idx = (int)i;
-    while(1){
+    while(1){ 
         if(QueueEmpty(&queues[idx])){
             sleep(1);
         }else{
