@@ -2,7 +2,7 @@
  * @Author: zy 953725892@qq.com
  * @Date: 2023-01-12 15:29:51
  * @LastEditors: zy 953725892@qq.com
- * @LastEditTime: 2023-01-12 19:14:15
+ * @LastEditTime: 2023-01-12 19:40:13
  * @FilePath: /lab1/doc/lab1实验报告.md
  * @Description: 
  * 
@@ -19,6 +19,8 @@
 - `int calSingle(char* path,int mode,char* suffix)`: 统计一个普通文件的行数
 - `int calDir(char* path,int mode,int recursive,char* suffix)`: 统计一个文件夹的行数
 - `void print_result(char *path, int line)`：输出最终的文件/文件夹行数统
+
+基本思路是首先采用getotp库对命令行参数进行解析，之后对于普通文件，采用标准IO对文件内容进行读取，根据参数统计文件行数；对于文件夹，则遍历其内容，对于其中的子文件夹进行递归调用，而其中的普通文件则采用普通文件的统计方式进行计算。
 
 ## 2.测试输出结果
 ### 2.1 测试目录
